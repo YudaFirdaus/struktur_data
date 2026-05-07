@@ -38,7 +38,7 @@ st.write(st.session_state.stack.peek())
 
 # Tampilan Apakah Stack Kosong
 st.subheader("Apakah Stack Kosong?")
-st.write(st.session_state.stack.is_empty())
+st.write(st.session_state.stack.isEmpty())
 
 # Menampilkan seluruh isi stack
 st.subheader("Seluruh Isi Stack")
