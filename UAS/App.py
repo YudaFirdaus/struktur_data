@@ -38,6 +38,9 @@ WARNA_NEGARA = {
 if "graf" not in st.session_state:
     st.session_state.graf = buat_graf_asean()
 
+if "maskapai_list" not in st.session_state:
+    st.session_state.maskapai_list = list(MASKAPAI_LIST)
+
 sky = st.session_state.graf
 
 # ── HELPER ───────────────────────────────────────────────────
@@ -214,12 +217,37 @@ with st.sidebar:
         if len(semua) < 2:
             st.info("Tambahkan minimal 2 bandara.")
         else:
+            # ── Sub-fitur: Tambah Maskapai Baru ──────────────────
+            with st.expander("➕ Tambah Maskapai Baru", expanded=False):
+                nama_maskapai_baru = st.text_input(
+                    "Nama Maskapai:",
+                    placeholder="Contoh: Scoot, Cebu Pacific ...",
+                    key="input_maskapai_baru"
+                )
+                if st.button("➕ Tambah ke Daftar", use_container_width=True):
+                    nama_bersih = nama_maskapai_baru.strip()
+                    if not nama_bersih:
+                        st.warning("⚠️ Nama maskapai tidak boleh kosong.")
+                    elif nama_bersih in st.session_state.maskapai_list:
+                        st.warning(f"⚠️ **{nama_bersih}** sudah ada dalam daftar.")
+                    else:
+                        st.session_state.maskapai_list.append(nama_bersih)
+                        st.success(f"✅ Maskapai **{nama_bersih}** berhasil ditambahkan!")
+                        st.rerun()
+
+            # Tampilkan daftar maskapai saat ini
+            with st.expander("📋 Daftar Maskapai Tersedia", expanded=False):
+                for i, m in enumerate(st.session_state.maskapai_list, 1):
+                    st.markdown(f"{i}. {m}")
+
+            st.divider()
+
             with st.form("form_rute"):
                 c1, c2 = st.columns(2)
                 dari_b = c1.selectbox("Dari:", semua)
                 ke_b   = c2.selectbox("Ke:", semua)
                 kode     = st.text_input("Kode Penerbangan (cth: GA830):")
-                maskapai = st.selectbox("Maskapai:", MASKAPAI_LIST)
+                maskapai = st.selectbox("Maskapai:", st.session_state.maskapai_list)
                 pesawat  = st.text_input("Tipe Pesawat:", "Boeing 737-800")
                 c3, c4   = st.columns(2)
                 jarak    = c3.number_input("Jarak (KM):", 1.0, 15000.0, 500.0)
